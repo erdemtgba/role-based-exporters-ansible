@@ -1,0 +1,8 @@
+[all:vars]
+ansible_connection=ssh
+ansible_user=netmera
+ansible_ssh_pass=netmera
+ansible_sudo_pass=netmera
+
+[servers]
+10.34.167.221
