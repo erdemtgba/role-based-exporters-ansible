@@ -1,0 +1,40 @@
+- name: Install node-exporter
+  get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz"
+    dest: /opt/node_exporter-1.3.1.linux-amd64.tar.gz
+    mode: 0755
+- name: Extract tar file
+  unarchive:
+    src: /opt/node_exporter-1.3.1.linux-amd64.tar.gz
+    dest: /opt/
+    remote_src: yes
+- name: Ansible create directory node_exporter
+  file:
+    path: /opt/node_exporter
+    state: directory
+- name: Copy exporter
+  copy:
+    src: /opt/node_exporter-1.3.1.linux-amd64/node_exporter
+    dest: /opt/node_exporter
+    remote_src: yes
+    mode: 0755
+- name: Delete exporter files
+  file:
+    path: /opt/node_exporter-1.3.1.linux-amd64.tar.gz
+    state: absent
+- name: Delete exporter directories
+  file:
+    path: /opt/node_exporter-1.3.1.linux-amd64
+    state: absent  
+- name: Create service
+  ansible.builtin.template: 
+    src: node-exporter-service.j2
+    dest: /usr/lib/systemd/system/node_exporter.service
+- name: Servie daemon-reload node_exporter
+  shell: systemctl daemon-reload
+- name: Service start node_exporter
+  shell: systemctl start node_exporter.service
+- name: Service status node_exporter
+  shell: systemctl status node_exporter.service
+- name: Service enable node_exporter
+  shell: systemctl enable node_exporter.service

@@ -1,0 +1,6 @@
+- hosts: servers
+  become: yes
+  gather_facts: true
+  roles:
+    - nodeexporter
+    - rabbitmqexporter

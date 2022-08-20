@@ -1,0 +1,10 @@
+[all:vars]
+ansible_connection=ssh
+#ubuntu is my ssh user
+ansible_user=ubuntu
+# pem file path for ssh 
+ansible_ssh_private_key_file= pem-file-path/my-pem-file.pem
+
+[servers]
+# x.x.x.x  --server ip addresses 1
+# x.x.x.x  --server ip addresses 2
