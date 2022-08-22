@@ -1,0 +1,51 @@
+---
+# tasks file for rabbitmqexporter
+- name: Install rabbitmq-exporter
+  get_url:
+    url: "https://github.com/kbudde/rabbitmq_exporter/releases/download/v1.0.0-RC19/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz"
+    dest: /opt/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz
+    mode: 0755
+- name: Extract tar file
+  unarchive:
+    src: /opt/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz
+    dest: /opt/
+    remote_src: yes
+- name: Ansible create directory rabbitmq-exporter
+  file:
+    path: /opt/rabbitmq-exporter
+    state: directory
+- name: Copy exporter
+  copy:
+    src: /opt/rabbitmq_exporter
+    dest: /opt/rabbitmq-exporter
+    remote_src: yes
+    mode: 0755
+- name: Create rabbitmq config file
+  file:
+    path: /opt/rabbitmq-exporter/config
+    state: touch
+- name: Copy default config
+  ansible.builtin.copy:
+    src: config
+    dest: /opt/rabbitmq-exporter/config
+    mode: 0755
+- name: Delete exporter files
+  file:
+    path: /opt/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz
+    state: absent
+- name: Delete exporter directories
+  file:
+    path: /opt/rabbitmq_exporter
+    state: absent  
+- name: Create service
+  ansible.builtin.template: 
+    src: rabbitmq-exporter-service.j2
+    dest: /usr/lib/systemd/system/rabbitmq_exporter.service
+- name: Servie daemon-reload rabbitmq_exporter
+  shell: systemctl daemon-reload
+- name: Service start rabbitmq_exporter
+  shell: systemctl start rabbitmq_exporter.service
+- name: Service status rabbitmq_exporter
+  shell: systemctl status rabbitmq_exporter.service
+- name: Service enable rabbitmq_exporter
+  shell: systemctl enable rabbitmq_exporter.service

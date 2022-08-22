@@ -1,0 +1,9 @@
+[Unit]
+Description=Exporter
+
+[Service]
+User=root
+ExecStart=/opt/mongodb-exporter/mongodb_exporter --mongodb.uri={{ mongodb_url }}
+
+[Install]
+WantedBy=default.target

@@ -5,6 +5,15 @@ ansible_user=ubuntu
 # pem file path for ssh 
 ansible_ssh_private_key_file= pem-file-path/my-pem-file.pem
 
-[servers]
+[nodes]
 # x.x.x.x  --server ip addresses 1
+[rabbitmq]
 # x.x.x.x  --server ip addresses 2
+[mysql]
+# x.x.x.x  --server ip addresses 3
+[redis]
+# x.x.x.x  --server ip addresses 4
+[elasticsearch]
+# x.x.x.x  --server ip addresses 5
+[mongodb]
+# x.x.x.x  --server ip addresses 6

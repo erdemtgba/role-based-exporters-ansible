@@ -1,6 +1,30 @@
-- hosts: servers
+- hosts: nodes
   become: yes
   gather_facts: true
   roles:
     - nodeexporter
+- hosts: rabbitmq
+  become: yes
+  gather_facts: true
+  roles:
     - rabbitmqexporter
+- hosts: mysqlexporter
+  become: yes
+  gather_facts: true
+  roles:
+    - mysqlexporter
+- hosts: redisexporter
+  become: yes
+  gather_facts: true
+  roles:
+    - redisexporter
+- hosts: mongodbexporter
+  become: yes
+  gather_facts: true
+  roles:
+    - mongodbexporter
+- hosts: elasticsearch
+  become: yes
+  gather_facts: true
+  roles:
+    - elasticsearchexporter

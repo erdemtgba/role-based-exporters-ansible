@@ -1,0 +1,38 @@
+---
+# tasks file for mongodbexporter
+- name: Install mongodb-exporter
+  get_url:
+    url: "https://github.com/percona/mongodb_exporter/releases/download/v0.34.0/mongodb_exporter-0.34.0.linux-amd64.tar.gz"
+    dest: /opt/mongodb_exporter.tar.gz
+    mode: 0755
+- name: Extract tar file
+  unarchive:
+    src: /opt/mongodb_exporter.tar.gz
+    dest: /opt/
+    remote_src: yes
+- name: Delete exporter files
+  file:
+    path: /opt/mongodb_exporter.tar.gz
+    state: absent
+- name: Copy exporter
+  copy:
+    src: /opt/mongodb*
+    dest: /opt/mongodb-exporter
+    remote_src: yes
+    mode: 0755
+- name: Delete exporter directories
+  file:
+    path: /opt/mongodb_exporter
+    state: absent  
+- name: Create service
+  ansible.builtin.template: 
+    src: mongodb-exporter-service.j2
+    dest: /usr/lib/systemd/system/mongodb_exporter.service
+- name: Servie daemon-reload mongodb_exporter
+  shell: systemctl daemon-reload
+- name: Service start mongodb_exporter
+  shell: systemctl start mongodb_exporter.service
+- name: Service status mongodb_exporter
+  shell: systemctl status mongodb_exporter.service
+- name: Service enable mongodb_exporter
+  shell: systemctl enable mongodb_exporter.service

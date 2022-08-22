@@ -1,0 +1,38 @@
+---
+# tasks file for elasticsearchexporter
+- name: Install elasticsearch-exporter
+  get_url:
+    url: "https://github.com/prometheus-community/elasticsearch_exporter/releases/download/v1.5.0/elasticsearch_exporter-1.5.0.linux-amd64.tar.gz"
+    dest: /opt/elasticsearch_exporter.tar.gz
+    mode: 0755
+- name: Extract tar file
+  unarchive:
+    src: /opt/elasticsearch_exporter.tar.gz
+    dest: /opt/
+    remote_src: yes
+- name: Delete exporter files
+  file:
+    path: /opt/elasticsearch_exporter.tar.gz
+    state: absent
+- name: Copy exporter
+  copy:
+    src: /opt/elasticsearch*
+    dest: /opt/elasticsearch-exporter
+    remote_src: yes
+    mode: 0755
+- name: Delete exporter directories
+  file:
+    path: /opt/elasticsearch_exporter
+    state: absent  
+- name: Create service
+  ansible.builtin.template: 
+    src: elasticsearch-exporter-service.j2
+    dest: /usr/lib/systemd/system/elasticsearch_exporter.service
+- name: Servie daemon-reload elasticsearch_exporter
+  shell: systemctl daemon-reload
+- name: Service start elasticsearch_exporter
+  shell: systemctl start elasticsearch_exporter.service
+- name: Service status elasticsearch_exporter
+  shell: systemctl status elasticsearch_exporter.service
+- name: Service enable elasticsearch_exporter
+  shell: systemctl enable elasticsearch_exporter.service

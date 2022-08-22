@@ -1,0 +1,10 @@
+[Unit]
+Description=ES Exporter
+
+[Service]
+User=root
+Group=root
+ExecStart=/opt/elasticsearch-exporter/elasticsearch_exporter --es.uri={{ es_url }}
+
+[Install]
+WantedBy=default.target
