@@ -1,51 +1,56 @@
 ---
-# tasks file for rabbitmqexporter
-- name: Install rabbitmq-exporter
+# tasks file for mysqlexporter
+- name: Install mysql-exporter
   get_url:
-    url: "https://github.com/kbudde/rabbitmq_exporter/releases/download/v1.0.0-RC19/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz"
-    dest: /opt/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz
+    url: "https://github.com/prometheus/mysqld_exporter/releases/download/v0.14.0/mysqld_exporter-0.14.0.linux-amd64.tar.gz"
+    dest: /opt/mysql_exporter.tar.gz
     mode: 0755
 - name: Extract tar file
   unarchive:
-    src: /opt/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz
+    src: /opt/mysql_exporter.tar.gz
     dest: /opt/
     remote_src: yes
-- name: Ansible create directory rabbitmq-exporter
+- name: Delete exporter files
   file:
-    path: /opt/rabbitmq-exporter
-    state: directory
+    path: /opt/mysql_exporter.tar.gz
+    state: absent
+- name: Create group "mysql_exporter"
+  ansible.builtin.group:
+    name: mysql_exporter
+    state: present
+- name:  Create a user "mysql_exporter"
+  ansible.builtin.user:
+    name: mysql_exporter
+    uid: 1040
+    group: mysql_exporter
 - name: Copy exporter
   copy:
-    src: /opt/rabbitmq_exporter
-    dest: /opt/rabbitmq-exporter
+    src: /opt/mysqld_exporter-0.14.0.linux-amd64/
+    dest: /opt/mysql-exporter
     remote_src: yes
     mode: 0755
-- name: Create rabbitmq config file
+    owner: mysql_exporter
+    group: mysql_exporter
+- name: Delete exporter directories
   file:
-    path: /opt/rabbitmq-exporter/config
-    state: touch
+    path: /opt/mysqld_exporter-0.14.0.linux-amd64
+    state: absent  
 - name: Copy default config
   ansible.builtin.copy:
     src: config
-    dest: /opt/rabbitmq-exporter/config
+    dest: /opt/mysqld_exporter.cnf
+    owner: mysql_exporter
+    group: mysql_exporter
     mode: 0755
-- name: Delete exporter files
-  file:
-    path: /opt/rabbitmq_exporter_1.0.0-RC19_linux_amd64.tar.gz
-    state: absent
-- name: Delete exporter directories
-  file:
-    path: /opt/rabbitmq_exporter
-    state: absent  
 - name: Create service
   ansible.builtin.template: 
-    src: rabbitmq-exporter-service.j2
-    dest: /usr/lib/systemd/system/rabbitmq_exporter.service
-- name: Servie daemon-reload rabbitmq_exporter
+    src: mysql-exporter-service.j2
+    dest: /usr/lib/systemd/system/mysql_exporter.service
+- name: Servie daemon-reload mysql_exporter
   shell: systemctl daemon-reload
-- name: Service start rabbitmq_exporter
-  shell: systemctl start rabbitmq_exporter.service
-- name: Service status rabbitmq_exporter
-  shell: systemctl status rabbitmq_exporter.service
-- name: Service enable rabbitmq_exporter
-  shell: systemctl enable rabbitmq_exporter.service
+- name: Service start mysql_exporter
+  shell: systemctl start mysql_exporter.service
+- name: Service status mysql_exporter
+  shell: systemctl status mysql_exporter.service
+- name: Service enable mysql_exporter
+  shell: systemctl enable mysql_exporter.service
